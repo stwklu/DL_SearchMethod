@@ -19,17 +19,6 @@ dof = 3
 # an offset added to generate a range of bbox
 offset = 5
 
-
-def synthetic_dataset(current_frame, current_corners, next_corners, no_samples=1000):
-    difference = next_corners - current_corners
-    for i in range(no_samples):
-        scale = 0
-        tx = 0
-        ty = 0
-        
-    return
-
-
 if __name__ == '__main__':
     # Sequence to be loaded
     seq_name = 'cmt_lemming'
@@ -71,13 +60,11 @@ if __name__ == '__main__':
             corners_pred = corners_true
 
         # update the tracker with the current frame
-        #print(corners_true.shape)
-        #print(corners_true)
-        # W, corners_pred = ist_transformation(delta_p_samples[idx, :], corners_true)
-        #synthetic_dataset(current_frame=None, current_corners=corners_true, next_corners=corners_pred, no_samples=1000)
-        
-        
-
+        print(i)
+        print(corners_true.shape)
+        print(corners_true)
+        exit()
+    
         # Compute scores
         current_mce = math.sqrt(np.sum(np.square(corners_true - corners_pred)) / 4)
         tracking_errors.append(current_mce)
