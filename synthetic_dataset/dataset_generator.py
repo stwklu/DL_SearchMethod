@@ -60,6 +60,7 @@ def synthetic_dataset(frame, corners, num_samples=10, dof=3, occlusion=False, li
         # Parameters
         epsilon = 1                 # Probability of perturbation
         max_occlusion = 10          # Max number of occlusion regions
+        gamma_range = 2             # Range for gamme correctiob parameter
         if occlusion and random.uniform(0,1)<epsilon:
             n_gamma = random.randint(0,max_occlusion)
             for i in range(n_gamma):
@@ -73,7 +74,7 @@ def synthetic_dataset(frame, corners, num_samples=10, dof=3, occlusion=False, li
                 height_range = [min(height_1, height_2), max(height_1, height_2)]
 
                 # Gamma correction
-                gamma = random.uniform(0,1)
+                gamma = random.uniform(0,gamma_range)
                 inv_gamma = 1/gamma
                 table = np.array([((i / 255.0) ** inv_gamma) * 255 for i in np.arange(0, 256)]).astype("uint8")
                 
