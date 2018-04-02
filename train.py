@@ -4,7 +4,7 @@ import datetime
 import data_helper
 import os
 
-from convnet import *
+from regnet import *
 
 # Parameters settings
 
@@ -42,7 +42,7 @@ print("Success!")
 
 # Initialize tf graph
 sess = tf.Session()
-logits = ConvNet(num_classes=y_dev.shape[1],
+logits = RegNet(num_classes=y_dev.shape[1],
 enable_moving_average=FLAGS.enable_moving_average,
 weight_decay=FLAGS.weight_decay)
 
