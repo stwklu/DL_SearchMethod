@@ -14,6 +14,20 @@ ground_truth_color = (0, 255, 0)
 # tracker location drawn in red
 prediction_color = (0, 0, 255)
 
+# 2d gaussian distribution for illumination perturbation
+def Gaussian2d(intensity, mu_x, mu_y, sigma_x, sigma_y, width, height):
+    size = 1000
+    x = np.linspace(0, width, num=width)
+    y = np.linspace(0, height, num=height)
+
+    x, y = np.meshgrid(x, y)
+    z = intensity * (1/(2*np.pi*sigma_x*sigma_y) * np.exp(-((x-mu_x)**2/(2*sigma_x**2) + (y-mu_y)**2/(2*sigma_y**2))))
+
+    z = z * intensity / (z.max())
+
+    return z
+
+
 def fix_size(boundary, max_boundary):
     if boundary < 0:
         boundary = 0
@@ -37,7 +51,7 @@ def get_bbox(frame, corners):
 
     return min_x, max_x, min_y, max_y
 
-def synthetic_dataset(frame, corners, num_samples=10, dof=3, occlusion=False, light=False):
+def synthetic_dataset(frame, corners, num_samples=10, dof=3, occlusion=False, light=False, visualization=False):
     # Normal distributions used for delta_p
     tx_samples = np.round(np.random.normal(loc=0, scale=5, size=num_samples))
     ty_samples = np.round(np.random.normal(loc=0, scale=5, size=num_samples))
@@ -61,11 +75,12 @@ def synthetic_dataset(frame, corners, num_samples=10, dof=3, occlusion=False, li
         epsilon = 1                 # Probability of perturbation
         max_occlusion = 10          # Max number of occlusion regions
         gamma_range = 2             # Range for gamme correctiob parameter
+        height, width = frame.shape
         if occlusion and random.uniform(0,1)<epsilon:
+            # occlusion by gamma correction (TO BE REPLACED: segmentation based occlusion)
             n_gamma = random.randint(0,max_occlusion)
             for i in range(n_gamma):
                 # Area of perturbation
-                height, width, channels = frame.shape 
                 width_1 = int(random.uniform(0, width))
                 width_2 = int(random.uniform(0, width))
                 height_1 = int(random.uniform(0, height))
@@ -85,11 +100,28 @@ def synthetic_dataset(frame, corners, num_samples=10, dof=3, occlusion=False, li
                 frame[height_range[0]:height_range[1], width_range[0]:width_range[1]] = perturb_area
 
 
-        if light and random.randint(0,1)<epsilon:
+        if light:
             pass
+            #Modeling illumination variations with 2D Gaussian functions
+            # Parameters
+            sigma_range = 80
+            intensity = 100
+
+            mu_x = int(random.uniform(0, width))
+            mu_y = int(random.uniform(0, height))
+            sigma_x = random.uniform(0, sigma_range)
+            sigma_y = random.uniform(0, sigma_range)
+
+            #mu_x, mu_y, sigma_x, sigma_y = 200, 200, 50, 60
+
+            gaussian_light = Gaussian2d(intensity, mu_x, mu_y, sigma_x, sigma_y, width, height)
+            gaussian_light = gaussian_light.astype(np.uint8)
+            frame = np.add(frame, gaussian_light)
+            #plt.imshow(gaussian_light)
+            #print(gaussian_light)
 
         # Show image and exit for testing
-        plt.imshow(frame)
+        plt.imshow(frame, 'gray')
         plt.show()
         exit()
 
@@ -119,9 +151,6 @@ def synthetic_dataset(frame, corners, num_samples=10, dof=3, occlusion=False, li
             exit()
 
 
-
-
-
         # Random homography transform
         if dof==8:
             rho = 32
@@ -144,10 +173,6 @@ def synthetic_dataset(frame, corners, num_samples=10, dof=3, occlusion=False, li
         delta_p_samples.append(np.array([tx_samples[i], ty_samples[i], scale_samples[i]]))
         previous_corners_samples.append(corners)
         corners_samples.append(new_corners)
-
-
-
-
 
     return np.array(image_samples), np.array(delta_p_samples), np.array(previous_image_samples), np.array(previous_corners_samples), np.array(corners_samples)
 
@@ -178,7 +203,7 @@ if __name__ == '__main__':
     # Main loop
     for i in range(no_of_frames):
         ret, frame = cap.read()
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         if i==0:
             old_frame = frame
         if not ret:
@@ -188,7 +213,7 @@ if __name__ == '__main__':
                             np.append(ground_truths[i, 2:4], [1]),
                             np.append(ground_truths[i, 4:6], [1]),
                             np.append(ground_truths[i, 6:8], [1])]).T
-        images, delta_ps, prev_images, prev_corners, corners = synthetic_dataset(frame, corners, dof=3, occlusion=True, light=True)
+        images, delta_ps, prev_images, prev_corners, corners = synthetic_dataset(frame, corners, dof=3, occlusion=False, light=True, visualization=True)
         all_images.append(images)
         all_delta_ps.append(delta_ps)
         all_prev_images.append(prev_images)
