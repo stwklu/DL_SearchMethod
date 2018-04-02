@@ -4,7 +4,7 @@ import datetime
 import data_helper
 import os
 
-from convnet import *
+from regnet import *
 
 # Parameters settings
 
@@ -42,12 +42,12 @@ print("Success!")
 
 # Initialize tf graph
 sess = tf.Session()
-logits = ConvNet(num_classes=y_dev.shape[1],
+logits = RegNet(num_classes=y_dev.shape[1],
 enable_moving_average=FLAGS.enable_moving_average,
 weight_decay=FLAGS.weight_decay)
 
 # Optimizer and LR Decay
-global_step = tf.Variable(0, name="global_step", trainable=False)
+global_step = tf.train.create_global_step()
 learning_rate = tf.train.exponential_decay(FLAGS.learning_rate, global_step, FLAGS.num_epochs*num_batches_per_epoch, 0.95, staircase=True)
 #optimizer = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=0.1)
 optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9)
@@ -79,10 +79,11 @@ hist_summaries_merged = tf.summary.merge(hist_summaries)
 grad_summaries = add_gradient_summaries(zip(gradients, variables))
 grad_summaries_merged = tf.summary.merge(grad_summaries)
 
-# Summaries for loss and accuracy
+# Summaries for loss and euclidean loss
 loss_summary = tf.summary.scalar("loss", logits.loss)
+l2_loss_summary = tf.summary.scalar("Euclidean_loss", logits.l2_loss)
 # Train Summaries
-train_summary_op = tf.summary.merge([loss_summary, hist_summaries_merged, grad_summaries_merged])
+train_summary_op = tf.summary.merge([loss_summary, l2_loss_summary, hist_summaries_merged, grad_summaries_merged])
 train_summary_dir = os.path.join(out_dir, "summaries", "train")
 train_summary_writer = tf.summary.FileWriter(train_summary_dir, sess.graph)
 
