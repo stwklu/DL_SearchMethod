@@ -106,7 +106,7 @@ class RegNet():
             else:
                 self.loss = tf.reduce_mean(losses) + regularization_losses
         
-        with tf.name_scope("Euclidean Loss"):
+        with tf.name_scope("Euclidean_Loss"):
             self.l2_loss = tf.norm(self.labels-self.predictions)
 
 #regnet = RegNet()
