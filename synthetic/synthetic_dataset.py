@@ -141,5 +141,5 @@ def generate_dataset(num_samples, patch_size, rho, dataset='train', training=Tru
 
 if __name__ == '__main__':
     generate_dataset(num_train_samples, patch_size=128, rho=32, dataset='train', num_synthesis=12)
-    generate_dataset(num_val_samples, patch_size=128, rho=32, dataset='val', training=False, num_synthesis=1)
-    generate_dataset(num_test_samples, patch_size=256, rho=64, dataset='test', training=False, num_synthesis=1)
+    #generate_dataset(num_val_samples, patch_size=128, rho=32, dataset='val', training=False, num_synthesis=1)
+    #generate_dataset(num_test_samples, patch_size=256, rho=64, dataset='test', training=False, num_synthesis=1)
