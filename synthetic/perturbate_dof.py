@@ -4,7 +4,7 @@ import random
 from image_utils import *
 
 # Homography (8 dof)
-def hom(frame, patch_size=128, rho=24, rho_2=16, training=True, 
+def hom(frame, patch_size=128, rho=20, rho_2=12, training=True, 
         synthesis_tracking=True, crop_method='avg'): 
     # Discard image if it's too small
     # Image will be resized to match the DeepHomography settings
