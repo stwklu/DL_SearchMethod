@@ -13,7 +13,7 @@ More detail of the project can be found in [report]()
 ## Results
 | Model                     | DeTone et. al. | Our Re-creation |
 | ------------- | ----------------- | ---------------- |
-| Mean corner error         |     79.76%        |      96.00%      |
+| Mean corner error         |     9.3951        |      9.2      |
 
 ## Team members
 | Author           |
