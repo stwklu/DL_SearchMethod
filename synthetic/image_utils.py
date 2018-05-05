@@ -24,6 +24,17 @@ def scale_down(img, target_size):
         dst_size = (target_width, int(np.round(target_width*src_ratio)))
     return cv2.resize(img, dst_size, interpolation=cv2.INTER_AREA)
 
+def scale_up(img, target_size):
+    src_height, src_width = img.shape[:2]
+    src_ratio = src_height/src_width
+    target_width, target_height = target_size
+    if src_ratio < target_height/target_width:
+        dst_size = (int(np.round(target_height/src_ratio)), target_height)
+    else:
+        dst_size = (target_width, int(np.round(target_width*src_ratio)))
+    return cv2.resize(img, dst_size, interpolation=cv2.INTER_CUBIC)
+
+
 def center_crop(img, target_size):
     target_width, target_height = target_size
     # Note the reverse order of width and height
@@ -48,7 +59,7 @@ def minmax_corner(corners):
     x_min = np.min(corners[:,0])
     y_max = np.max(corners[:,1])
     y_min = np.min(corners[:,1])
-    print(x_min, x_max, y_min, y_max)
+    #print(x_min, x_max, y_min, y_max)
     return int(x_min), int(x_max), int(y_min), int(y_max)
 
 def avg_corner(corners, patch_size=128):
@@ -57,7 +68,7 @@ def avg_corner(corners, patch_size=128):
     '''
     x_mean = np.mean(corners[:,0])
     y_mean = np.mean(corners[:,1])
-    print(np.mean(corners, axis=0))
+    #print(np.mean(corners, axis=0))
     return int(x_mean-np.floor(patch_size/2)), int(x_mean+np.ceil(patch_size/2)), int(y_mean-np.floor(patch_size/2)), int(y_mean+np.ceil(patch_size/2))
 
 def mean_corners_error(delta_p_preds, corners_batch, corners_true_batch, rho=32):

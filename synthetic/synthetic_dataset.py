@@ -7,7 +7,7 @@ import os
 import shutil
 import uuid
 
-from perturbate_dof import *
+from perturbate_dof_old import *
 from image_utils import *
 
 # ground truth location drawn in green
@@ -61,12 +61,12 @@ def generate_patch(frame_fname, dataset_path, patch_size, rho, no_sample, warp_f
         print(os.path.join(dataset_path, str(no_sample)+"_"+frame_fname.split('/')[-1][:-4]+'_delta_p.npy'))
         patch_1 = cv2.cvtColor(patch_1, cv2.COLOR_GRAY2RGB)
         patch_2 = cv2.cvtColor(patch_2, cv2.COLOR_GRAY2RGB)
-        plt.subplot(1,2,1)
-        plt.title('Original image')
+        #plt.subplot(1,2,1)
+        #plt.title('Original image')
         plt.imshow(frame)
-        plt.subplot(1,2,2)
-        plt.title('After applying homography')
-        plt.imshow(perturbed_frame)
+        #plt.subplot(1,2,2)
+        #plt.title('After applying homography')
+        #plt.imshow(perturbed_frame)
         plt.show()
         plt.subplot(1,2,1)
         plt.title('patch_1')
