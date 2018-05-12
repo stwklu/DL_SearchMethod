@@ -13,7 +13,7 @@ def _shuffle_in_unison(a, b):
     np.random.set_state(prng_state)
     np.random.shuffle(b)
 
-def generator(path, batch_size=64, normalize=True, rho=32):
+def generator(path, batch_size=64, normalize=True, factor=1):
     """Generator to be used with model.fit_generator()"""
     while True:
         files = glob.glob(os.path.join(path, '*.npz'))
@@ -33,6 +33,5 @@ def generator(path, batch_size=64, normalize=True, rho=32):
                 batch_images = images.pop()
                 batch_offsets = offsets.pop()
                 batch_images = (batch_images - 127.5) / 127.5
-                if normalize:
-                    batch_offsets /= rho
+                batch_offsets *= factor
                 yield batch_images, batch_offsets.astype(np.float32)
