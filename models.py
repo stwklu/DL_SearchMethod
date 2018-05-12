@@ -60,4 +60,5 @@ if __name__ == "__main__":
     model_json = model.to_json()
     with open("homography_model_compiled.json","w") as json_file:
         json_file.write(model_json)                    # Save model architecture
-    print("Model saved.")
+    time_str = datetime.datetime.now().isoformat()
+    print("{}: Model saved as json.".format(time_str))

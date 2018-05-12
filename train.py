@@ -7,7 +7,6 @@ from keras.optimizers import SGD, Adam
 from keras.callbacks import LearningRateScheduler, ModelCheckpoint, TensorBoard
 from keras import losses, regularizers
 import keras.backend as K
-
 import numpy as np
 from absl import flags
 import cv2
@@ -39,6 +38,7 @@ FLAGS = flags.FLAGS
 FLAGS(sys.argv)
 #FLAGS._parse_flags()
 print("\nParameters:")
+print("-"*20)
 for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr, value.value))
 print("")
@@ -57,11 +57,14 @@ def halve_lr(epoch):
 
 def train():
     # Init Keras Model here
-    model = homography_net(num_classes=FLAGS.num_classes)
+    model = homography_net(num_classes=FLAGS.num_classes, dropout_keep_prob=FLAGS.dropout_keep_prob)
     model.compile(optimizer=SGD(lr=FLAGS.init_learning_rate, momentum=0.9), loss=SMSE, metrics=[mean_corner_err])
-    #model_json = model.to_json()
-    #with open("homography_model_compiled.json","w") as json_file:
-    #    json_file.write(model_json)                    # Save model architecture
+
+    model_json = model.to_json()
+    with open("homography_net_"+FLAGS.warp_func+"_model.json","w") as json_file:
+        json_file.write(model_json)                    # Save model architecture
+    time_str = datetime.datetime.now().isoformat()
+    print("{}: Model saved as json.".format(time_str))
 
     # Trainer
     learning_rate = LearningRateScheduler(halve_lr)
